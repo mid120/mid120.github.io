@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>多线程动态获取后台处理数据插入数据的条数 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1 首先让主线程处理正常的逻辑 2 开线程处理正常的逻辑 （代码如下）@RequestMapping(value = &amp;quot;ajax/sms/DraftAssociationSaveOrUpdate.html&amp;quot;) @ResponseBody public SmsOperBean AssociationCustomerSaveOrUpdate(String mobileId, Str">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程动态获取后台处理数据插入数据的条数">
+<meta property="og:url" content="http://yoursite.com/2016/07/06/多线程获取后台处理的数据条数/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1 首先让主线程处理正常的逻辑 2 开线程处理正常的逻辑 （代码如下）@RequestMapping(value = &amp;quot;ajax/sms/DraftAssociationSaveOrUpdate.html&amp;quot;) @ResponseBody public SmsOperBean AssociationCustomerSaveOrUpdate(String mobileId, Str">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2016-07-07T12:07:16.457Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多线程动态获取后台处理数据插入数据的条数">
+<meta name="twitter:description" content="1 首先让主线程处理正常的逻辑 2 开线程处理正常的逻辑 （代码如下）@RequestMapping(value = &amp;quot;ajax/sms/DraftAssociationSaveOrUpdate.html&amp;quot;) @ResponseBody public SmsOperBean AssociationCustomerSaveOrUpdate(String mobileId, Str">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-多线程获取后台处理的数据条数" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/06/多线程获取后台处理的数据条数/" class="article-date">
+  <time datetime="2016-07-06T07:33:54.000Z" itemprop="datePublished">2016-07-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      多线程动态获取后台处理数据插入数据的条数
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1 首先让主线程处理正常的逻辑</p>
+<p>2 开线程处理正常的逻辑</p>
+<h2 id="（代码如下）"><a href="#（代码如下）" class="headerlink" title="（代码如下）"></a>（代码如下）</h2><pre><code>@RequestMapping(value = &quot;ajax/sms/DraftAssociationSaveOrUpdate.html&quot;)
+@ResponseBody
+public SmsOperBean AssociationCustomerSaveOrUpdate(String mobileId, String containTag, String containCustomer,
+        String NotContainTag, String NotContainCustomer, String iBlack, String campaignType) {
+    logger.info(&quot;关联客户页面点击下一步AssociationCustomerSaveOrUpdate方法-----start---主键[&quot;+mobileId+&quot;]&quot;);
+    try {
+        String operSign = MD5.sign(String.valueOf(Calendar.getInstance().getTimeInMillis()), &quot;UTF-8&quot;);
+        // 创建线程处理插向数据库插入逻辑
+        threadSave(mobileId, containTag, containCustomer, NotContainTag, NotContainCustomer, iBlack, campaignType,operSign);
+        SmsOperBean smsOperBean = new SmsOperBean(operSign);
+        return smsOperBean;
+    } catch (Exception e) {
+        logger.error(&quot;md5-sign error&quot;,e);
+        return null;
+    }
+
+}
+
+private void threadSave(final String mobileId, final String containTag, final String containCustomer,
+        final String NotContainTag, final String NotContainCustomer, final String iBlack, final String campaignType,final String operSign){
+    new Thread(new Runnable(){
+        public void run(){
+            // 先将原来的关联关系去掉、重新插入新的关联关系TODO标签组 和外部客户
+            String resurlt = associationCustomerService.AssociationCustomerSaveOrUpdate(mobileId, containTag,
+                    containCustomer, NotContainTag, NotContainCustomer, iBlack, getCurrentUser().getUserId(), campaignType);
+            if (resurlt.equals(&quot;success&quot;)) {
+                try {
+                    // 删除原来的emailId 和收件人的关联关系。重新插入数据用set 去重
+                    edmAssociationCustomerService.saveOrUpdateSMSReciever(Long.parseLong(mobileId),
+                            getCurrentUser().getUserId(), iBlack,operSign);
+                } catch (Exception e) {
+                    logger.error(&quot;关联客户失败&quot;, e);
+                }
+            }
+            logger.info(&quot;关联客户页面点击下一步AssociationCustomerSaveOrUpdate方法-----end---主键[&quot;+mobileId+&quot;]&quot;);
+        }
+    }).start();
+}
+</code></pre><p>3 新开的线程处理逻辑如下</p>
+<h2 id="业务主要层代码"><a href="#业务主要层代码" class="headerlink" title="业务主要层代码"></a>业务主要层代码</h2><pre><code>    for (String t : set) {
+
+        if(t!=null){
+            //手机验证,如果出现错误手机号记录
+            if (!RegexUtil.checkMobileNumber(t)) {
+                logger.info(t+&quot;-----正则校验失败&quot;);
+                continue;
+            }
+
+            item.setMobileDetailId(mobileId);
+            item.setMobile(t);
+            item.setCreateTime(new Timestamp(new Date().getTime()) );
+            item.setStatus(Short.parseShort(&quot;0&quot;));
+            try {
+                num = mobileRecipientRepository.insert(item);
+            } catch (Exception e) {
+                num=-1;
+                logger.warn(&quot;SMS:主键:&quot; + mobileId + &quot;,违反唯一约束条件&quot;,e);
+            }finally{
+             SmsOperConstant.setOper(operSign);//记录处理条数，方便页面异部调用查看（这是个map 每次set一次数量+1）
+            }
+        }
+
+}
+    SmsOperConstant.removeOper(operSign);//处理完成后清除缓存，通知页面跳转 (执行完毕，清空map)
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/07/06/多线程获取后台处理的数据条数/" data-id="cjg7j8gkx0002y8l1eycexjyn" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/07/设计模式/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          设计模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/05/MyBatis批量删除/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Mybatis 批量删除数据</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/20/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/07/scala构造器/">scala 主从构造器</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/07/设计模式/">设计模式</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/06/多线程获取后台处理的数据条数/">多线程动态获取后台处理数据插入数据的条数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/05/MyBatis批量删除/">Mybatis 批量删除数据</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

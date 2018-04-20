@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>scala 主从构造器 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在Scala中，有两种构造器，主构造器（primary constructor）和从构造器（auxiliary constructor1 定义类的时候，就定义了构造器。即：是（）内的内容。   2 主构造器会将类定义{}里的所有语句执行一次。 3 如果主构造器参数不带val或var，那么会根据是否被方法使用来决定。 4 如果不带val或var的参数被方法使用了，它会变为对象私有字段；  5 如果没">
+<meta property="og:type" content="article">
+<meta property="og:title" content="scala 主从构造器">
+<meta property="og:url" content="http://yoursite.com/2016/07/07/scala构造器/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="在Scala中，有两种构造器，主构造器（primary constructor）和从构造器（auxiliary constructor1 定义类的时候，就定义了构造器。即：是（）内的内容。   2 主构造器会将类定义{}里的所有语句执行一次。 3 如果主构造器参数不带val或var，那么会根据是否被方法使用来决定。 4 如果不带val或var的参数被方法使用了，它会变为对象私有字段；  5 如果没">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2016-07-07T12:04:14.674Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="scala 主从构造器">
+<meta name="twitter:description" content="在Scala中，有两种构造器，主构造器（primary constructor）和从构造器（auxiliary constructor1 定义类的时候，就定义了构造器。即：是（）内的内容。   2 主构造器会将类定义{}里的所有语句执行一次。 3 如果主构造器参数不带val或var，那么会根据是否被方法使用来决定。 4 如果不带val或var的参数被方法使用了，它会变为对象私有字段；  5 如果没">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-scala构造器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/07/scala构造器/" class="article-date">
+  <time datetime="2016-07-07T07:33:54.000Z" itemprop="datePublished">2016-07-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      scala 主从构造器
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="在Scala中，有两种构造器，主构造器（primary-constructor）和从构造器（auxiliary-constructor"><a href="#在Scala中，有两种构造器，主构造器（primary-constructor）和从构造器（auxiliary-constructor" class="headerlink" title="在Scala中，有两种构造器，主构造器（primary constructor）和从构造器（auxiliary constructor"></a>在Scala中，有两种构造器，主构造器（primary constructor）和从构造器（auxiliary constructor</h3><p>1 定义类的时候，就定义了构造器。即：是（）内的内容。  </p>
+<p>2 主构造器会将类定义{}里的所有语句执行一次。</p>
+<p>3 如果主构造器参数不带val或var，那么会根据是否被方法使用来决定。</p>
+<p>4 如果不带val或var的参数被方法使用了，它会变为对象私有字段； </p>
+<p>5 如果没有被方法使用，则被当成一个普通的参数，不升级成字段</p>
+<p>##代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">object constractTest &#123;  </span><br><span class="line">    def main(args: <span class="built_in">Array</span>[<span class="built_in">String</span>]): Unit = &#123;  </span><br><span class="line">        <span class="keyword">var</span> p = <span class="keyword">new</span> Person(<span class="number">20</span>)  </span><br><span class="line">        println(p.name)  </span><br><span class="line">        println(p.age)  </span><br><span class="line">        println(p.message)  </span><br><span class="line">    &#125;</span><br><span class="line">class Person(val pname: String, page: Int) &#123;  </span><br><span class="line">  </span><br><span class="line">        println(<span class="string">"start..."</span>)  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">var</span> name = pname  </span><br><span class="line">        <span class="keyword">var</span> age = page  </span><br><span class="line">        <span class="keyword">var</span> message = <span class="string">""</span>  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">//从构造器，调用主构造器。  </span></span><br><span class="line">        <span class="comment">//规则：每一个从构造器的第一个动作都是调用同一个类里面其他的构造器!!!!因此主构造器是类的唯一入口点。   </span></span><br><span class="line">        <span class="comment">//这里的从构造器，调用了主构造器。  </span></span><br><span class="line">        def <span class="keyword">this</span>(pname: <span class="built_in">String</span>) = <span class="keyword">this</span>(pname, <span class="number">20</span>)  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">//同时加入其他逻辑  </span></span><br><span class="line">        def <span class="keyword">this</span>(page: Int) &#123;  </span><br><span class="line">            <span class="keyword">this</span>(<span class="string">"mike"</span>, page)  </span><br><span class="line">            message = <span class="string">"hello"</span>  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        println(<span class="string">"end..."</span>)  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="执行结果："><a href="#执行结果：" class="headerlink" title="执行结果："></a>执行结果：</h5><ul>
+<li>start…</li>
+<li>end…</li>
+<li>mike</li>
+<li>20</li>
+<li>hello</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/07/07/scala构造器/" data-id="cjg7j8gkv0001y8l1ssqt8mij" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/04/20/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/07/设计模式/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">设计模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/20/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/07/scala构造器/">scala 主从构造器</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/07/设计模式/">设计模式</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/06/多线程获取后台处理的数据条数/">多线程动态获取后台处理数据插入数据的条数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/05/MyBatis批量删除/">Mybatis 批量删除数据</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
